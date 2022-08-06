@@ -15,7 +15,7 @@
           <li v-for="(error, errorIndex) in errorText" :key="errorIndex">{{ error }}</li>
         </ul>
       </div>
-      <button @click="GmailLogin" class="
+      <button class="
           gray
           d-flex
           gmail-login
@@ -47,7 +47,7 @@
           </div>
         </div>
         <br />
-        <button @click="login" class="login-btn rounded-btn">Login</button>
+        <button class="login-btn rounded-btn">Login</button>
         <br /><br />
         <nuxt-link to="/register" class="gray" id="register-link">
           Create an account
@@ -58,13 +58,7 @@
 </template>
 <script>
 import { required, email } from "vuelidate/lib/validators";
-import "~/plugins/firebase.js";
-import {
-  getAuth,
-  signInWithPopup,
-  GoogleAuthProvider,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
+
 export default {
   name: "loginPage",
   data() {
@@ -75,6 +69,7 @@ export default {
       iconEye: ["fa", "eye"],
       passwordType: "password",
       errorText: [],
+      isLogout: false,
     };
   },
   validations: {
@@ -87,9 +82,6 @@ export default {
     },
   },
   fetch() { },
-  mounted() {
-    console.log(this.$store);
-  },
   methods: {
     formVailddate() {
       this.$v.$touch();
@@ -113,34 +105,7 @@ export default {
     },
     async login() {
       this.formVailddate();
-      if (!this.isError) {
-        try {
-          const auth = getAuth();
-          const user = await signInWithEmailAndPassword(
-            auth,
-            this.email,
-            this.password
-          );
-          if (user.user.emailVerified) {
-            if (user.user.email === "edhapp.edu@gmail.com") {
-              this.$store.commit("auth/login", { uid: user.user.uid, displayName: user.user.displayName, isAdmin: true, });
-              console.log(this.$store.state.auth.user);
-              //this.$router.push("/admin");
-            }
-            else {
-              this.$store.commit('auth/login', { uid: user.user.uid, displayName: user.user.displayName, isAdmin: false, });
-              console.log(this.$store.state.auth.user);
-              //this.$router.push("/");
-            }
-          } else {
-            this.isError = true;
-            this.errorText = ["Email is not verified."];
-          }
-        } catch (e) {
-          this.isError = true;
-          this.errorText = [e.code || e];
-        }
-      }
+
     },
     togglePassword() {
       this.passwordType =
@@ -149,25 +114,7 @@ export default {
         this.iconEye[1] === "eye" ? ["fa", "eye-slash"] : ["fa", "eye"];
     },
     async GmailLogin() {
-      try {
-        const auth = getAuth();
-        const provider = new GoogleAuthProvider();
-        const user = await signInWithPopup(auth, provider);
-        if (user.user.email === "edhapp.edu@gmail.com") {
-          this.$store.commit('auth/login', { uid: user.user.uid, displayName: user.user.displayName, isAdmin: false, });
-          //this.$router.push("/admin");
-        }
-        else {
-          user.user.isAdmin = false;
-          this.$store.commit('auth/login', { uid: user.user.uid, displayName: user.user.displayName, isAdmin: false, });
 
-          //this.$router.push("/");
-        }
-        console.log(this.$nuxt.$store.user)
-      } catch (e) {
-        this.isError = true;
-        this.errorText = [e.code || e];
-      }
     },
   },
 };

@@ -4,15 +4,15 @@
       <h3 class="navbar-brand">Edhapp</h3>
       <ul class="navbar-nav">
         <li class="nav-item">
-          <a class="nav-link" aria-current="page" href="#">Course</a>
+          <nuxt-link class="nav-link" aria-current="page" to="/">Course</nuxt-link>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Content</a>
+          <nuxt-link class="nav-link" to="#">Content</nuxt-link>
         </li>
       </ul>
       <ul class="d-flex navbar-nav mb-2 mb-lg-0">
         <li class="nav-item">
-          <button class="nav-link active button-link" @click="logout">Log out</button>
+          <button class="nav-link active button-link" >Log out</button>
         </li>
       </ul>
     </div>
@@ -20,20 +20,11 @@
 </template>
 
 <script>
-import { getAuth, signOut } from "firebase/auth";
+
 export default {
   name: "Navbar",
   methods: {
-    logout() {
-      const auth = getAuth();
-      signOut(auth)
-        .then(() => {
-          this.$router.push("/login");
-        })
-        .catch((error) => {
-          this.$swal("Error", error, "error");
-        });
-    },
+   
   },
 };
 </script>

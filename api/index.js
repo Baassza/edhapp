@@ -101,11 +101,27 @@ app.get('/course/:id', (req, res) => {
     const collection = db.collection('course');
     collection.doc(req.params.id).get()
         .then(doc => {
-            res.send(doc.data())
+            const { list } = doc.data()
+            let { courseName, courseSRC } = list
+            let dataRows = []
+            courseName.forEach((item, index) => {
+                dataRows.push([index + 1, item, courseSRC[index]])
+            })
+            res.send(dataRows)
         }).catch(err => {
             res.status(500).send(err)
             console.log(err)
         })
+})
+
+app.patch('/course/:id/media', (req, res) => {
+    const db = admin.firestore();
+    const collection = db.collection('course');
+    // edit list in course
+    collection.doc(req.body.params.id).update({
+        list: req.body.body
+    })
+    res.end()
 })
 
 app.get('/course', (req, res) => {

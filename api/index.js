@@ -1,9 +1,14 @@
 
 const admin = require("firebase-admin");
-const bodyParser = require('body-parser')
-const app = require('express')()
+const express = require('express')
+const app = express()
 const cors = require('cors')
-app.use(bodyParser.json())
+const multer = require('multer');
+const upload = multer();
+const axios = require('axios');
+
+app.use(express.urlencoded({extended: true})); 
+app.use(express.json());   
 app.use(cors())
 const serviceAccount = require("./config/edhapp-3a149-firebase-adminsdk-yt7lk-df33f235c6.json");
 if (!admin.apps.length) {
@@ -150,6 +155,21 @@ app.get('/course', (req, res) => {
             res.status(500).send(err)
             console.log(err)
         })
+})
+
+app.post('/payment/notify', upload.single('image'),(req,res)=>{
+    const db = admin.firestore();
+    const collection = db.collection('payment');
+    // save image to storage
+    collection.add({
+        paydate: admin.firestore.Timestamp.fromDate(new Date()),
+        userId: db.collection('user').doc(req.body.userId),
+        courseId: db.collection('course').doc(req.body.courseId),
+        status:"pending",
+    })
+    const token = req.body.token
+   const image = req.file
+    res.end()
 })
 
 
